@@ -1,3 +1,5 @@
+// Toma Takamatsu, Amy Margolina
+
 package chess;
 
 import java.util.ArrayList;
