@@ -11,7 +11,6 @@ public abstract class Piece {
         this.file = file;
     }
 
-    public abstract boolean isValidMove(int targetRank, int targetFile);
-    public abstract boolean makeMove(int targetRank, int targetFile);
+    public abstract boolean makeMove(int targetRank, int targetFile, Board board);
     public abstract String toString();
 }

@@ -6,19 +6,46 @@ public class Bishop extends Piece {
     }
 
     @Override
-    public boolean isValidMove(int targetRank, int targetFile) {
-        // Bishop moves diagonally
-        return Math.abs(targetRank - rank) == Math.abs(targetFile - file);
-    }
-
-    @Override
-    public boolean makeMove(int targetRank, int targetFile) {
-        if (isValidMove(targetRank, targetFile)) {
-            this.rank = targetRank;
-            this.file = targetFile;
-            return true;
+    public boolean makeMove(int targetRank, int targetFile, Board board) {
+        // ensure move is diagonal
+        if (Math.abs(targetRank - rank) != Math.abs(targetFile - file)) {
+            return false;
         }
-        return false;
+
+        // determine direction of movement
+        int rankStep = (targetRank > rank) ? 1 : -1; // up or down
+        int fileStep = (targetFile > file) ? 1 : -1; // right or left
+
+        int currentRank = rank + rankStep;
+        int currentFile = file + fileStep;
+
+        // check if path is blocked
+        while (currentRank != targetRank && currentFile != targetFile) {
+            if (board.board[currentRank][currentFile] != null) {
+                return false;
+            }
+            currentRank += rankStep;
+            currentFile += fileStep;
+        }
+
+        // check if the destination has a piece
+        Piece targetPiece = board.board[targetRank][targetFile];
+        if (targetPiece != null) {
+            // if it's the same color, move not valid
+            if (targetPiece.player == this.player) {
+                return false;
+            }
+            // if other color, remove piece
+            board.board[targetRank][targetFile] = null;
+        }
+
+        // update position
+        board.board[rank][file] = null;
+        this.rank = targetRank;
+        this.file = targetFile;
+        board.board[targetRank][targetFile] = this;
+        
+        return true;
     }
 
     @Override
