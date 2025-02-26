@@ -1,16 +1,17 @@
 package chess;
 
-abstract class Piece {
-    char player;
+public abstract class Piece {
+    boolean player; // true = white, false = black
     int rank;
-    char file;
+    int file; // 0 = a, 7 = h
 
-    Piece(char player, int rank, char file){
+    public Piece(boolean player, int rank, int file){
         this.player = player;
         this.rank = rank;
         this.file = file;
     }
 
-    abstract boolean isValidMove(int targetRank, char targetFile);
-    abstract boolean makeMove(int targetRank, char targetFile);
+    public abstract boolean isValidMove(int targetRank, int targetFile);
+    public abstract boolean makeMove(int targetRank, int targetFile);
+    public abstract String toString();
 }
