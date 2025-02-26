@@ -1,7 +1,7 @@
 package chess;
 
 public class Pawn extends Piece{
-    boolean hasMoved = false; // To keep track of whether it is their very first move
+    public boolean hasMoved = false; // To keep track of whether it is their very first move
 
     public Pawn(boolean player, int rank, int file){
         super(player, rank, file);

@@ -1,7 +1,7 @@
 package chess;
 
 public class Rook extends Piece{
-    boolean hasMoved = false; // To keep track of whether it is their very first move (for castling)
+    public boolean hasMoved = false; // To keep track of whether it is their very first move (for castling)
 
     public Rook(boolean player, int rank, int file){
         super(player, rank, file);
@@ -36,7 +36,10 @@ public class Rook extends Piece{
 
         // Checking if target is the same colored piece
         Piece target = board.board[targetRank][targetFile];
-        if (target == null || target.player != player) return true;
+        if (target == null || target.player != player){
+            hasMoved= true;
+            return true;
+        }
 
         return false;
     }

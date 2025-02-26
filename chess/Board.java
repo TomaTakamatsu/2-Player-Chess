@@ -6,6 +6,23 @@ public class Board {
         board = createNewBoard();
     }
 
+    public Board(Piece[][] board){
+        this.board = board;
+    }
+
+    public Piece[][] copyBoard(Piece[][] boardToCopy){
+        Piece[][] copiedBoard = new Piece[8][8];
+        for (int rank = 0; rank < 8; rank++){
+            for (int file = 0; file < 8; file++){
+                if (board[rank][file] != null){
+                    copiedBoard[rank][file] = board[rank][file];
+                }
+            }
+        }
+
+        return copiedBoard;
+    }
+
     public Piece[][] createNewBoard(){
         Piece[][] newBoard = new Piece[8][8];
         
@@ -50,5 +67,44 @@ public class Board {
             System.out.println((8 - rank) + ""); // Printing rank on right side
         }
         System.out.println("a  b  c  d  e  f  g  h"); // Printing file on the bottom
+    }
+
+    // Returns 0 if neither king is in check, returns 1 if white is in check, returns 2 if black is in check, returns 3 if both are in check
+    public int isKingInCheck(){
+        int check = 0;
+        boolean blackChecked = false;
+        boolean whiteChecked = false;
+
+        // Finding the two kings
+        Piece whiteKing = null;
+        Piece blackKing = null;
+        for (int rank = 0; rank < 8; rank++){
+            for (int file = 0; file < 8; file++){
+                Piece piece = board[rank][file];
+                if (piece instanceof King){
+                    if (piece.player) whiteKing = piece;
+                    else blackKing = piece;
+                }
+            }
+        }
+
+        // Checking if any of the pieces can capture the king
+        for (int rank = 0; rank < 8; rank++){
+            for (int file = 0; file < 8; file++){
+                Piece piece = board[rank][file];
+                if (piece == null || piece instanceof King) continue;
+                else if (piece.player && !blackChecked){
+                    blackChecked = piece.makeMove(blackKing.rank, blackKing.file, this);
+                }
+                else if (!piece.player && !whiteChecked){
+                    whiteChecked = piece.makeMove(whiteKing.rank, whiteKing.file, this);
+                }
+            }
+        }
+
+        // Updating if there was a check or not
+        if (whiteChecked) check += 1;
+        if (blackChecked) check += 2;
+        return check;
     }
 }

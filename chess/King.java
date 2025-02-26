@@ -1,7 +1,7 @@
 package chess;
 
 public class King extends Piece {
-    private boolean hasMoved = false;
+    public boolean hasMoved = false;
 
     public King(boolean player, int rank, int file) {
         super(player, rank, file);
