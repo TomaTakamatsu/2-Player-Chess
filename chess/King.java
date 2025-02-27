@@ -14,22 +14,11 @@ public class King extends Piece {
             return false;
         }
     
-        // check if the destination has a piece
+        // check if destination has same color piece
         Piece targetPiece = board.board[targetRank][targetFile];
-        if (targetPiece != null) {
-            // if it's the same color, move not valid
-            if (targetPiece.player == this.player) {
-                return false;
-            }
-            // if other color, remove piece
-            board.board[targetRank][targetFile] = null;
+        if (targetPiece != null && targetPiece.player == this.player) {
+            return false;
         }
-    
-        // update position
-        board.board[rank][file] = null;
-        this.rank = targetRank;
-        this.file = targetFile;
-        board.board[targetRank][targetFile] = this;
 
         hasMoved = true;
         
