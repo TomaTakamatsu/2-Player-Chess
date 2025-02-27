@@ -56,7 +56,7 @@ public class Board {
     }
 
     public void printBoard(){
-        for (int rank = 0; rank < 8; rank++){
+        for (int rank = 7; rank >= 0; rank--){
             for (int file = 0; file < 8; file++){
                 if (board[rank][file] == null){
                     if ((rank + file) % 2 == 0) System.out.println("    "); // Printing light square
@@ -64,7 +64,7 @@ public class Board {
                 }
                 else System.out.println(board[rank][file] + " "); // Printing pieces
             }
-            System.out.println((8 - rank) + ""); // Printing rank on right side
+            System.out.println((rank + 1) + ""); // Printing rank on right side
         }
         System.out.println("a  b  c  d  e  f  g  h"); // Printing file on the bottom
     }
