@@ -1,7 +1,12 @@
 package chess;
 
+import java.util.ArrayList;
+
 public class Board {
     public Piece[][] board; // Chess board, board[rank][file]
+    public static boolean whiteTurn = true;
+    public static Board boardInstance;
+
     public Board(){
         board = createNewBoard();
     }
@@ -106,5 +111,33 @@ public class Board {
         if (whiteChecked) check += 1;
         if (blackChecked) check += 2;
         return check;
+    }
+
+    public static ArrayList<ReturnPiece> getPiecesOnBoard() {
+        ArrayList<ReturnPiece> pieces = new ArrayList<>();
+        for (int rank = 0; rank < 8; rank++) {
+            for (int file = 0; file < 8; file++) {
+                Piece piece = boardInstance.board[rank][file];
+                if (piece != null) {
+                    pieces.add(convertToReturnPiece(piece, rank, file));
+                }
+            }
+        }
+        return pieces;
+    }
+
+    private static ReturnPiece convertToReturnPiece(Piece piece, int rank, int file) {
+        ReturnPiece rp = new ReturnPiece();
+        rp.pieceRank = 8 - rank; // Convert from array index to chess notation
+        rp.pieceFile = ReturnPiece.PieceFile.values()[file];
+
+        if (piece instanceof Pawn) rp.pieceType = piece.player ? ReturnPiece.PieceType.WP : ReturnPiece.PieceType.BP;
+        else if (piece instanceof Rook) rp.pieceType = piece.player ? ReturnPiece.PieceType.WR : ReturnPiece.PieceType.BR;
+        else if (piece instanceof Knight) rp.pieceType = piece.player ? ReturnPiece.PieceType.WN : ReturnPiece.PieceType.BN;
+        else if (piece instanceof Bishop) rp.pieceType = piece.player ? ReturnPiece.PieceType.WB : ReturnPiece.PieceType.BB;
+        else if (piece instanceof Queen) rp.pieceType = piece.player ? ReturnPiece.PieceType.WQ : ReturnPiece.PieceType.BQ;
+        else if (piece instanceof King) rp.pieceType = piece.player ? ReturnPiece.PieceType.WK : ReturnPiece.PieceType.BK;
+
+        return rp;
     }
 }

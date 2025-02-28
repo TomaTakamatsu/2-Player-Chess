@@ -10,7 +10,7 @@ public class Knight extends Piece{
         
         // Checking if the piece is able to move on to the target
         Piece target = board.board[targetRank][targetFile];
-        if (target != null && target.player != player) return true; // Target is empty or an enemy piece
+        if ((target != null && target.player != player)||(target==null)) return true; // Target is empty or an enemy piece
 
         return false;
     }
