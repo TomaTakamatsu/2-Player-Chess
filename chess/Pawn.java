@@ -5,6 +5,8 @@ public class Pawn extends Piece{
 
     public Pawn(boolean player, int rank, int file){
         super(player, rank, file);
+        if (player) pieceType = PieceType.WP;
+        else pieceType = PieceType.BP;
     }
 
     public boolean makeMove(int targetRank, int targetFile, Board board){

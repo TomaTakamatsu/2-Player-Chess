@@ -1,21 +1,38 @@
 package chess;
 
-public abstract class Piece {
+import java.util.HashMap;
+
+public abstract class Piece extends ReturnPiece{
     boolean player; // true = white, false = black
     int rank;
     int file; // 0 = a, 7 = h
+
+    public static HashMap<Integer, PieceFile> intToFile = new HashMap<>();
+    static{
+        intToFile.put(0, PieceFile.a);
+        intToFile.put(1, PieceFile.b);
+        intToFile.put(2, PieceFile.c);
+        intToFile.put(3, PieceFile.d);
+        intToFile.put(4, PieceFile.e);
+        intToFile.put(5, PieceFile.f);
+        intToFile.put(6, PieceFile.g);
+        intToFile.put(7, PieceFile.h);
+    }
 
     public Piece(boolean player, int rank, int file){
         this.player = player;
         this.rank = rank;
         this.file = file;
+        this.pieceFile = intToFile.get(file);
+        this.pieceRank = rank + 1;
     }
 
     public abstract boolean makeMove(int targetRank, int targetFile, Board board);
-    public abstract String toString();
     public void updatePosition(int rank, int file){
         this.rank = rank;
         this.file = file;
+        this.pieceFile = intToFile.get(file);
+        this.pieceRank = rank + 1;
     }
 
     public boolean validMove(int targetRank, int targetFile, Board board){

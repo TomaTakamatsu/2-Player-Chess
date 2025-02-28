@@ -5,6 +5,8 @@ public class Rook extends Piece{
 
     public Rook(boolean player, int rank, int file){
         super(player, rank, file);
+        if (player) pieceType = PieceType.WR;
+        else pieceType = PieceType.BR;
     }
 
     public boolean makeMove(int targetRank, int targetFile, Board board){

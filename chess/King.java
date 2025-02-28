@@ -5,6 +5,8 @@ public class King extends Piece {
 
     public King(boolean player, int rank, int file) {
         super(player, rank, file);
+        if (player) pieceType = PieceType.WK;
+        else pieceType = PieceType.BK;
     }
 
     @Override

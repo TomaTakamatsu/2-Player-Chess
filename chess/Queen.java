@@ -3,6 +3,8 @@ package chess;
 public class Queen extends Piece {
     public Queen(boolean player, int rank, int file) {
         super(player, rank, file);
+        if (player) pieceType = PieceType.WQ;
+        else pieceType = PieceType.BQ;
     }
 
     @Override

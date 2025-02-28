@@ -2,9 +2,9 @@ package chess;
 
 import java.util.ArrayList;
 
-public class Board {
+public class Board extends ReturnPlay{
     public Piece[][] board; // Chess board, board[rank][file]
-    public static boolean whiteTurn = true;
+    public boolean whiteTurn = true;
     public static Board boardInstance;
 
     public Board(){
@@ -61,7 +61,7 @@ public class Board {
     }
 
     public void printBoard(){
-        for (int rank = 7; rank >= 0; rank--){
+        for (int rank = 0; rank < 0; rank++){
             for (int file = 0; file < 8; file++){
                 if (board[rank][file] == null){
                     if ((rank + file) % 2 == 0) System.out.println("    "); // Printing light square
@@ -113,31 +113,121 @@ public class Board {
         return check;
     }
 
-    public static ArrayList<ReturnPiece> getPiecesOnBoard() {
+    public ArrayList<ReturnPiece> getBoardAsList(){
         ArrayList<ReturnPiece> pieces = new ArrayList<>();
-        for (int rank = 0; rank < 8; rank++) {
-            for (int file = 0; file < 8; file++) {
-                Piece piece = boardInstance.board[rank][file];
-                if (piece != null) {
-                    pieces.add(convertToReturnPiece(piece, rank, file));
-                }
+        for (int rank = 0; rank < 8; rank++){
+            for (int file = 0; file < 8; file++){
+                if (board[rank][file] != null) pieces.add(board[rank][file]);
             }
         }
+
         return pieces;
     }
 
-    private static ReturnPiece convertToReturnPiece(Piece piece, int rank, int file) {
-        ReturnPiece rp = new ReturnPiece();
-        rp.pieceRank = 8 - rank; // Convert from array index to chess notation
-        rp.pieceFile = ReturnPiece.PieceFile.values()[file];
+    public ReturnPlay.Message Move(int startFile, int startRank, int endFile, int endRank, String special){
+        Piece targetPiece = board[startRank][startFile];
+        
+        // Checking for null and if correct player is making the move
+        if(targetPiece == null || (!whiteTurn && targetPiece.player) || (whiteTurn && !targetPiece.player)){
+            System.out.println("Move: " + startRank + " " + startFile + " " + endRank + " " + endFile);
+            System.out.println("Correct player not making move s");
+            return ReturnPlay.Message.ILLEGAL_MOVE;
+        }
 
-        if (piece instanceof Pawn) rp.pieceType = piece.player ? ReturnPiece.PieceType.WP : ReturnPiece.PieceType.BP;
-        else if (piece instanceof Rook) rp.pieceType = piece.player ? ReturnPiece.PieceType.WR : ReturnPiece.PieceType.BR;
-        else if (piece instanceof Knight) rp.pieceType = piece.player ? ReturnPiece.PieceType.WN : ReturnPiece.PieceType.BN;
-        else if (piece instanceof Bishop) rp.pieceType = piece.player ? ReturnPiece.PieceType.WB : ReturnPiece.PieceType.BB;
-        else if (piece instanceof Queen) rp.pieceType = piece.player ? ReturnPiece.PieceType.WQ : ReturnPiece.PieceType.BQ;
-        else if (piece instanceof King) rp.pieceType = piece.player ? ReturnPiece.PieceType.WK : ReturnPiece.PieceType.BK;
+        // Checking if move will cause a check
+        if (!targetPiece.validMove(endRank, endFile, this)){
+            System.out.println("Move: " + startRank + " " + startFile + " " + endRank + " " + endFile);
+            System.out.println("Invalid move");
+            return ReturnPlay.Message.ILLEGAL_MOVE;
+        }
 
-        return rp;
+        // Checking if move is valid
+        if (!targetPiece.makeMove(endRank, endFile, this)){
+            System.out.println("Move: " + startRank + " " + startFile + " " + endRank + " " + endFile);
+            System.out.println("Couldn't make move ss");
+            return ReturnPlay.Message.ILLEGAL_MOVE;
+        }
+
+        // Updating positions
+        targetPiece.updatePosition(endRank, endFile);
+        board[startRank][startFile] = null;
+        board[endRank][endFile] = targetPiece;
+
+        // Checking for promotion and promoting
+        if ((targetPiece.pieceType == ReturnPiece.PieceType.WP && endRank == 7)){
+            Piece piece = null;
+            if (special == null || special.equals("Q") || special.equals("draw?")){
+                piece = new Queen(true, endRank, endFile);
+            }
+            else if (special.equals("B")){
+                piece = new Bishop(true, endRank, endFile);
+            }
+            else if (special.equals("R")){
+                piece = new Rook(true, endRank, endFile);
+            }
+            else if (special.equals("N")){
+                piece = new Knight(true, endRank, endFile);
+            }
+            board[endRank][endFile] = piece;
+        }
+        else if (targetPiece.pieceType == ReturnPiece.PieceType.BP && endRank == 0){
+            Piece piece = null;
+            if (special == null || special.equals("Q") || special.equals("draw?")){
+                piece = new Queen(false, endRank, endFile);
+            }
+            else if (special.equals("B")){
+                piece = new Bishop(false, endRank, endFile);
+            }
+            else if (special.equals("R")){
+                piece = new Rook(false, endRank, endFile);
+            }
+            else if (special.equals("N")){
+                piece = new Knight(false, endRank, endFile);
+            }
+            board[endRank][endFile] = piece;
+        }
+
+        // Switching turns
+        if (whiteTurn) whiteTurn = false;
+        else whiteTurn = true;
+
+        // Checking for checks
+        int check = isKingInCheck();
+        if (check == 1 || check == 2) return ReturnPlay.Message.CHECK;
+
+        // Check for checkmate
+
+        // Check for draw
+        if (special != null && special.equals("draw?")) return ReturnPlay.Message.DRAW;
+
+        return null;
     }
+
+//     public static ArrayList<ReturnPiece> getPiecesOnBoard() {
+//         ArrayList<ReturnPiece> pieces = new ArrayList<>();
+//         for (int rank = 0; rank < 8; rank++) {
+//             for (int file = 0; file < 8; file++) {
+//                 Piece piece = boardInstance.board[rank][file];
+//                 if (piece != null) {
+//                     pieces.add(convertToReturnPiece(piece, rank, file));
+//                 }
+//             }
+//         }
+//         return pieces;
+//     }
+
+//     private static ReturnPiece convertToReturnPiece(Piece piece, int rank, int file) {
+//         ReturnPiece rp = new ReturnPiece();
+//         rp.pieceRank = 8 - rank; // Convert from array index to chess notation
+//         rp.pieceFile = ReturnPiece.PieceFile.values()[file];
+
+//         if (piece instanceof Pawn) rp.pieceType = piece.player ? ReturnPiece.PieceType.WP : ReturnPiece.PieceType.BP;
+//         else if (piece instanceof Rook) rp.pieceType = piece.player ? ReturnPiece.PieceType.WR : ReturnPiece.PieceType.BR;
+//         else if (piece instanceof Knight) rp.pieceType = piece.player ? ReturnPiece.PieceType.WN : ReturnPiece.PieceType.BN;
+//         else if (piece instanceof Bishop) rp.pieceType = piece.player ? ReturnPiece.PieceType.WB : ReturnPiece.PieceType.BB;
+//         else if (piece instanceof Queen) rp.pieceType = piece.player ? ReturnPiece.PieceType.WQ : ReturnPiece.PieceType.BQ;
+//         else if (piece instanceof King) rp.pieceType = piece.player ? ReturnPiece.PieceType.WK : ReturnPiece.PieceType.BK;
+
+//         return rp;
+//     }
 }

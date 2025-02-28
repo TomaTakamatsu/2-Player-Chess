@@ -3,6 +3,8 @@ package chess;
 public class Knight extends Piece{
     public Knight(boolean player, int rank, int file){
         super(player, rank, file);
+        if (player) pieceType = PieceType.WN;
+        else pieceType = PieceType.BN;
     }
 
     public boolean makeMove(int targetRank, int targetFile, Board board){
