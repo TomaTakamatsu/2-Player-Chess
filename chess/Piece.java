@@ -52,10 +52,17 @@ public abstract class Piece extends ReturnPiece{
 
         // Making a copy of the board
         Piece[][] copiedBoard = board.copyBoard(board.board);
+
+        // Move the piece on the copied board
         copiedBoard[rank][file] = null;
         copiedBoard[targetRank][targetFile] = copyPiece;
+
         Board copiedBoardObj = new Board(copiedBoard);
 
+        // Check if the player's own king is in check after the move
+        // if (copiedBoardObj.isKingInCheck(player)) {
+        //     return false;
+        // }
         // Checking if king is in check
         int check = copiedBoardObj.isKingInCheck();
         if (check == 3) return false;

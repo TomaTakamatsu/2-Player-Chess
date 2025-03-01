@@ -113,6 +113,206 @@ public class Board extends ReturnPlay{
         return check;
     }
 
+    public boolean isCheckmate(boolean isWhite) {   
+        isWhite=!isWhite; //?
+        System.out.println("🔍 Checking for checkmate for " + (isWhite ? "White" : "Black"));
+    
+        int checkStatus = isKingInCheck();
+        boolean kingInCheck = (isWhite && (checkStatus == 1 || checkStatus == 3)) || 
+                              (!isWhite && (checkStatus == 2 || checkStatus == 3));
+    
+        if (!kingInCheck) {
+            System.out.println("❌ ERROR: Called isCheckmate() but king is NOT in check.");
+            return false;
+        }
+    
+        System.out.println("🛠️ Debugging Board Before Checking Moves:");
+        for (int r = 0; r < 8; r++) {
+            for (int f = 0; f < 8; f++) {
+                if (board[r][f] instanceof King) {
+                    System.out.println((board[r][f].player ? "✅ White King" : "✅ Black King") + " at " + r + "," + f);
+                }
+            }
+        }
+    
+        // Try all possible moves for the player in check
+        for (int rank = 0; rank < 8; rank++) {
+            for (int file = 0; file < 8; file++) {
+                Piece piece = board[rank][file];
+    
+                if (piece != null && piece.player == isWhite) {
+                    System.out.println("🛠️ Testing moves for: " + piece + " at (" + rank + "," + file + ")");
+    
+                    for (int targetRank = 0; targetRank < 8; targetRank++) {
+                        for (int targetFile = 0; targetFile < 8; targetFile++) {
+                            if (piece.validMove(targetRank, targetFile, this)) {  // ✅ Only valid moves
+                                // Simulate the move
+                                Piece temp = board[targetRank][targetFile];
+                                board[targetRank][targetFile] = piece;
+                                board[rank][file] = null;
+    
+                                System.out.println("🔍 Checking if this move removes check...");
+                                System.out.println("🛠️ Debugging Board After Moving:");
+                                for (int r = 0; r < 8; r++) {
+                                    for (int f = 0; f < 8; f++) {
+                                        if (board[r][f] instanceof King) {
+                                            System.out.println((board[r][f].player ? "✅ White King" : "✅ Black King") + " at " + r + "," + f);
+                                        }
+                                    }
+                                }
+    
+                                boolean stillInCheck = (isKingInCheck() == (isWhite ? 1 : 2));
+    
+                                // Undo the move
+                                board[rank][file] = piece;
+                                board[targetRank][targetFile] = temp;
+    
+                                if (!stillInCheck) {
+                                    System.out.println("✅ Found an escape move! No checkmate.");
+                                    return false; // At least one move escapes check
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    
+        System.out.println("🚨 No valid escape moves found! This is CHECKMATE.");
+        return true; // No valid moves → Checkmate
+    }      
+
+        // public boolean isKingInCheck(boolean whiteKing) {
+        //     int kingRank = -1, kingFile = -1;
+            
+        //     // Locate the king on the board
+        //     for (int rank = 0; rank < 8; rank++) {
+        //         for (int file = 0; file < 8; file++) {
+        //             Piece piece = board[rank][file];
+        //             if (piece instanceof King && piece.player == whiteKing) {
+        //                 kingRank = rank;
+        //                 kingFile = file;
+        //                 break;
+        //             }
+        //         }
+        //     }
+            
+        //     // If the king is not found, return false (should not happen in a normal game)
+        //     if (kingRank == -1 || kingFile == -1) {
+        //         return false;
+        //     }
+            
+        //     // Check if any opposing piece can attack the king
+        //     for (int rank = 0; rank < 8; rank++) {
+        //         for (int file = 0; file < 8; file++) {
+        //             Piece attacker = board[rank][file];
+        //             if (attacker != null && attacker.player != whiteKing) {
+        //                 if (attacker.makeMove(kingRank, kingFile, this)) {
+        //                     System.out.println("King in check! Attacker: " + attacker + " from (" + rank + "," + file + ")");
+        //                     return true;
+        //                 }
+        //             }
+        //         }
+        //     }
+        //     return false;
+        // }
+    
+        // /**
+        //  * Checks if the given player's king is in checkmate.
+        //  * @param whiteKing true if checking for white's king, false for black's king
+        //  * @return true if the player is in checkmate, false otherwise
+        //  */
+        // public boolean isCheckmate(boolean whiteKing) {
+        //     if (!isKingInCheck(whiteKing)) {
+        //         return false; // If the king is not in check, it's not checkmate
+        //     }
+        
+        //     // Locate the king
+        //     int kingRank = -1, kingFile = -1;
+        //     for (int rank = 0; rank < 8; rank++) {
+        //         for (int file = 0; file < 8; file++) {
+        //             Piece piece = board[rank][file];
+        //             if (piece instanceof King && piece.player == whiteKing) {
+        //                 kingRank = rank;
+        //                 kingFile = file;
+        //                 break;
+        //             }
+        //         }
+        //     }
+        
+        //     // If the king was not found (should not happen in a valid game), return false
+        //     if (kingRank == -1 || kingFile == -1) {
+        //         System.out.println("ERROR: King not found on board!");
+        //         return false;
+        //     }
+        
+        //     // Check if the king can move out of check
+        //     int[] dRank = {-1, -1, -1, 0, 0, 1, 1, 1};
+        //     int[] dFile = {-1, 0, 1, -1, 1, -1, 0, 1};
+        
+        //     for (int i = 0; i < 8; i++) {
+        //         int newRank = kingRank + dRank[i];
+        //         int newFile = kingFile + dFile[i];
+        
+        //         // Ensure new position is within bounds
+        //         if (newRank >= 0 && newRank < 8 && newFile >= 0 && newFile < 8) {
+        //             if (board[newRank][newFile] != null && board[newRank][newFile].player == whiteKing) {
+        //                 continue; // Skip move if occupied by own piece
+        //             }
+        
+        //             // Temporarily move the king
+        //             Piece original = board[newRank][newFile];
+        //             board[kingRank][kingFile] = null;
+        //             board[newRank][newFile] = new King(whiteKing, newRank, newFile);
+        //             boolean stillInCheck = isKingInCheck(whiteKing);
+        
+        //             // Undo the move
+        //             board[newRank][newFile] = original;
+        //             board[kingRank][kingFile] = new King(whiteKing, kingRank, kingFile);
+        
+        //             if (!stillInCheck) {
+        //                 return false; // King can escape check
+        //             }
+        //         }
+        //     }
+        
+        //     // Check if any move by other pieces can block the check or capture the attacker
+        //     for (int rank = 0; rank < 8; rank++) {
+        //         for (int file = 0; file < 8; file++) {
+        //             Piece piece = board[rank][file];
+        //             if (piece != null && piece.player == whiteKing) {
+        //                 for (int tr = 0; tr < 8; tr++) {
+        //                     for (int tf = 0; tf < 8; tf++) {
+        //                         // Ensure target position is within bounds before calling makeMove()
+        //                         if (tr >= 0 && tr < 8 && tf >= 0 && tf < 8) {
+        //                             if (piece.makeMove(tr, tf, this)) {
+        //                                 // Simulate the move
+        //                                 Piece captured = board[tr][tf];
+        //                                 board[rank][file] = null;
+        //                                 board[tr][tf] = piece;
+        //                                 boolean stillInCheck = isKingInCheck(whiteKing);
+        
+        //                                 // Undo the move
+        //                                 board[tr][tf] = captured;
+        //                                 board[rank][file] = piece;
+        
+        //                                 if (!stillInCheck) {
+        //                                     System.out.println("Found escape move: " + piece + " from (" + rank + "," + file + ") to (" + tr + "," + tf + ")");
+        //                                     return false; // Found a move that gets out of check
+        //                                 }
+        //                             }
+        //                         }
+        //                     }
+        //                 }
+        //             }
+        //         }
+        //     }
+        
+        //     // If no valid moves are found, it's checkmate
+        //     System.out.println("🚨 No valid escape moves found! This is CHECKMATE.");
+        //     return true;
+        // }        
+
     public ArrayList<ReturnPiece> getBoardAsList(){
         ArrayList<ReturnPiece> pieces = new ArrayList<>();
         for (int rank = 0; rank < 8; rank++){
@@ -153,6 +353,22 @@ public class Board extends ReturnPlay{
         board[startRank][startFile] = null;
         board[endRank][endFile] = targetPiece;
 
+        // //check for check and checkmate
+        // if (isKingInCheck(!whiteTurn)) {
+        //     return isCheckmate(!whiteTurn) 
+        //         ? (whiteTurn ? ReturnPlay.Message.CHECKMATE_WHITE_WINS : ReturnPlay.Message.CHECKMATE_BLACK_WINS) 
+        //         : ReturnPlay.Message.CHECK;
+        // }
+
+        int checkStatus = isKingInCheck();
+        boolean opponentIsWhite = !whiteTurn;
+        if ((checkStatus == 1 && opponentIsWhite) || (checkStatus == 2 && !opponentIsWhite)) {
+            if (isCheckmate(whiteTurn)) {
+                return whiteTurn ? ReturnPlay.Message.CHECKMATE_WHITE_WINS : ReturnPlay.Message.CHECKMATE_BLACK_WINS;
+            }
+            return ReturnPlay.Message.CHECK;
+        }        
+        
         // Checking for promotion and promoting
         if ((targetPiece.pieceType == ReturnPiece.PieceType.WP && endRank == 7)){
             Piece piece = null;
@@ -187,47 +403,13 @@ public class Board extends ReturnPlay{
             board[endRank][endFile] = piece;
         }
 
-        // Switching turns
+        // Check for draw
+        if (special != null && special.equals("draw?")) return ReturnPlay.Message.DRAW;
+        
+        // Switch turns
         if (whiteTurn) whiteTurn = false;
         else whiteTurn = true;
 
-        // Checking for checks
-        int check = isKingInCheck();
-        if (check == 1 || check == 2) return ReturnPlay.Message.CHECK;
-
-        // Check for checkmate
-
-        // Check for draw
-        if (special != null && special.equals("draw?")) return ReturnPlay.Message.DRAW;
-
         return null;
     }
-
-//     public static ArrayList<ReturnPiece> getPiecesOnBoard() {
-//         ArrayList<ReturnPiece> pieces = new ArrayList<>();
-//         for (int rank = 0; rank < 8; rank++) {
-//             for (int file = 0; file < 8; file++) {
-//                 Piece piece = boardInstance.board[rank][file];
-//                 if (piece != null) {
-//                     pieces.add(convertToReturnPiece(piece, rank, file));
-//                 }
-//             }
-//         }
-//         return pieces;
-//     }
-
-//     private static ReturnPiece convertToReturnPiece(Piece piece, int rank, int file) {
-//         ReturnPiece rp = new ReturnPiece();
-//         rp.pieceRank = 8 - rank; // Convert from array index to chess notation
-//         rp.pieceFile = ReturnPiece.PieceFile.values()[file];
-
-//         if (piece instanceof Pawn) rp.pieceType = piece.player ? ReturnPiece.PieceType.WP : ReturnPiece.PieceType.BP;
-//         else if (piece instanceof Rook) rp.pieceType = piece.player ? ReturnPiece.PieceType.WR : ReturnPiece.PieceType.BR;
-//         else if (piece instanceof Knight) rp.pieceType = piece.player ? ReturnPiece.PieceType.WN : ReturnPiece.PieceType.BN;
-//         else if (piece instanceof Bishop) rp.pieceType = piece.player ? ReturnPiece.PieceType.WB : ReturnPiece.PieceType.BB;
-//         else if (piece instanceof Queen) rp.pieceType = piece.player ? ReturnPiece.PieceType.WQ : ReturnPiece.PieceType.BQ;
-//         else if (piece instanceof King) rp.pieceType = piece.player ? ReturnPiece.PieceType.WK : ReturnPiece.PieceType.BK;
-
-//         return rp;
-//     }
 }

@@ -9,11 +9,17 @@ public class PlayChess {
 		// TODO Auto-generated method stub
 		Scanner sc = new Scanner(System.in);
 		Chess.start();
-		
+		printBoard(Chess.chessBoard.getBoardAsList()); // print initial board
+		System.out.println();
+		System.out.println("Enter a move (e.g., 'e2 e4'), 'reset,' or 'quit' to exit:");
+		System.out.println();
+
 		String line = sc.nextLine();
 		while (!line.equals("quit")) {
 			if (line.equals("reset")) {
 				Chess.start();
+				System.out.println();
+				printBoard(Chess.chessBoard.getBoardAsList()); // print initial board
 				System.out.println();
 				line = sc.nextLine();
 				continue;
