@@ -38,6 +38,8 @@ public abstract class Piece extends ReturnPiece{
     public boolean validMove(int targetRank, int targetFile, Board board){
         if (targetRank == rank && targetFile == file) return false; // Checking if move changes nothing
         if (targetRank > 7 || targetRank < 0 || targetFile > 7 || targetFile < 0) return false; // Checking if move is within the board
+        if (board.board[targetRank][targetFile] instanceof King) return false; // If target is a king, return false
+        System.out.println("saw if it was king");
 
         // Checking if move will cause a check on their own king
 

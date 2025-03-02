@@ -33,6 +33,7 @@ public class Pawn extends Piece{
                 hasMoved = true;
                 return true;
             }
+            System.out.println("can't capture");;
             return false;
         }
 

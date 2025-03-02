@@ -36,6 +36,16 @@ public class King extends Piece {
             return false;
         }
 
+        // Checking if King is in check
+        if (player && board.isKingInCheck() == 1) {
+            System.out.println("White king is in check");
+            return false;
+        }
+        if (!player && board.isKingInCheck() == 2) {
+            System.out.println("Black king is in check");
+            return false;
+        }
+
         // c or g
 
         // Checking which corner of rook to castle with
@@ -63,9 +73,16 @@ public class King extends Piece {
         if (targetFile - file > 0) direction = 1;
         else direction = -1;
 
-        int currentFile = file;
+        int currentFile = file + direction;
         while (currentFile != rookCorner){
-            if (board.board[targetRank][currentFile] != null) return false;
+            if (board.board[targetRank][currentFile] != null){
+                System.out.println("Piece in between isn't null");
+                return false;
+            }
+            if (!validMove(targetRank, currentFile, board)) {
+                System.out.println("King will cross/end where he will be in check");
+                return false;
+            }
             currentFile += direction;
         }
 

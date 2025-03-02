@@ -20,6 +20,14 @@ public class Board extends ReturnPlay{
         for (int rank = 0; rank < 8; rank++){
             for (int file = 0; file < 8; file++){
                 if (board[rank][file] != null){
+                    Piece copyPiece = board[rank][file];
+                    boolean playerColor = copyPiece.player;
+                    if (copyPiece instanceof Pawn) copyPiece = new Pawn(playerColor, rank, file);
+                    else if (copyPiece instanceof Rook) copyPiece = new Rook(playerColor, rank, file);
+                    else if (copyPiece instanceof Bishop) copyPiece = new Bishop(playerColor, rank, file);
+                    else if (copyPiece instanceof Knight) copyPiece = new Knight(playerColor, rank, file);
+                    else if (copyPiece instanceof King) copyPiece = new King(playerColor, rank, file);
+                    else if (copyPiece instanceof Queen) copyPiece = new Queen(playerColor, rank, file);
                     copiedBoard[rank][file] = board[rank][file];
                 }
             }
