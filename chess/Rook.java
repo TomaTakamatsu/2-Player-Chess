@@ -45,9 +45,4 @@ public class Rook extends Piece{
 
         return false;
     }
-
-    public String toString(){
-        if (player) return "wR ";
-        else return "bR ";
-    }
 }

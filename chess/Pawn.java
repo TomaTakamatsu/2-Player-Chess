@@ -40,9 +40,4 @@ public class Pawn extends Piece{
 
         return false;
     }
-
-    public String toString(){
-        if (player) return "wp ";
-        else return "bp ";
-    }
 }

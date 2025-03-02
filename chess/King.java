@@ -13,6 +13,9 @@ public class King extends Piece {
     public boolean makeMove(int targetRank, int targetFile, Board board) {
         // ensure the move is one square in any direction
         if (Math.abs(targetRank - rank) > 1 || Math.abs(targetFile - file) > 1) {
+            if (!hasMoved){
+                return Castle(targetRank, targetFile, board);
+            }
             return false;
         }
     
@@ -26,9 +29,49 @@ public class King extends Piece {
         
         return true;
     }
-    
-    @Override
-    public String toString() {
-        return (player ? "w" : "b") + "K";
+
+    public boolean Castle(int targetRank, int targetFile, Board board){
+        // Checking to see if King is moving ranks
+        if ((targetRank != 0 && player) && (targetRank != 7 && !player)){
+            return false;
+        }
+
+        // c or g
+
+        // Checking which corner of rook to castle with
+        int rookCorner;
+        int rookTargetFile;
+        if (targetFile == 2) {
+            rookCorner = 0;
+            rookTargetFile = 3;
+        }
+        else if (targetFile == 6) {
+            rookCorner = 7;
+            rookTargetFile = 5;
+        }
+        else return false;
+
+        // Checking to see if corner piece is a rook
+        if (!(board.board[targetRank][rookCorner] instanceof Rook)) return false;
+        Rook rookToCastle = (Rook)board.board[targetRank][rookCorner];
+
+        // Checking to see if rook has moved
+        if (rookToCastle.hasMoved) return false;
+
+        // Checking to see if there are pieces in between
+        int direction = 0;
+        if (targetFile - file > 0) direction = 1;
+        else direction = -1;
+
+        int currentFile = file;
+        while (currentFile != rookCorner){
+            if (board.board[targetRank][currentFile] != null) return false;
+            currentFile += direction;
+        }
+
+        // Castling
+        board.board[targetRank][rookCorner] = null;
+        board.board[targetRank][rookTargetFile] = new Rook(player, targetRank, rookTargetFile);
+        return true;
     }
 }
