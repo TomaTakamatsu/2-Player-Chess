@@ -26,12 +26,20 @@ public class Pawn extends Piece{
             return true;
         }
 
-        // Capturing diagonal, different from en passant
+        // Capturing diagonal
         if (Math.abs(targetFile - file) == 1 && targetRank == rank + direction){
             Piece target = board.board[targetRank][targetFile];
             if (target != null && target.player != player){
                 hasMoved = true;
                 return true;
+            }
+            // En passant
+            else if (target == null && (board.board[rank][targetFile] instanceof Pawn)){
+                if (board.previousMove[0] == rank + 2*direction && board.previousMove[1] == targetFile && board.previousMove[2] == rank && board.previousMove[3] == targetFile){
+                    hasMoved = true;
+                    board.board[rank][targetFile] = null;
+                    return true;
+                }
             }
             System.out.println("can't capture");;
             return false;

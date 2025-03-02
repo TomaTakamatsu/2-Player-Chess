@@ -89,6 +89,9 @@ public class King extends Piece {
         // Castling
         board.board[targetRank][rookCorner] = null;
         board.board[targetRank][rookTargetFile] = new Rook(player, targetRank, rookTargetFile);
+        Rook castledRook = (Rook)board.board[targetRank][rookTargetFile];
+        castledRook.hasMoved = true;
+        hasMoved = true;
         return true;
     }
 }

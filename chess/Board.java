@@ -5,6 +5,7 @@ import java.util.ArrayList;
 public class Board extends ReturnPlay{
     public Piece[][] board; // Chess board, board[rank][file]
     public boolean whiteTurn = true;
+    public int[] previousMove;
     public static Board boardInstance;
 
     public Board(){
@@ -38,6 +39,8 @@ public class Board extends ReturnPlay{
 
     public Piece[][] createNewBoard(){
         Piece[][] newBoard = new Piece[8][8];
+        whiteTurn = true;
+        previousMove = new int[4];
         
         // Placing white pieces
         newBoard[0][0] = new Rook(true, 0, 0);
@@ -79,7 +82,7 @@ public class Board extends ReturnPlay{
         return pieces;
     }
 
-    public ReturnPlay.Message Move(int startFile, int startRank, int endFile, int endRank, String special){
+    public ReturnPlay.Message Move(int startRank, int startFile, int endFile, int endRank, String special){
         Piece targetPiece = board[startRank][startFile];
         
         // Checking for null and if correct player is making the move
@@ -142,6 +145,12 @@ public class Board extends ReturnPlay{
             board[endRank][endFile] = piece;
         }
 
+        // Logging previous move
+        previousMove[0] = startRank;
+        previousMove[1] = startFile;
+        previousMove[2] = endRank;
+        previousMove[3] = endFile;
+        
         // Switching turns
         if (whiteTurn) whiteTurn = false;
         else whiteTurn = true;
@@ -195,12 +204,6 @@ public class Board extends ReturnPlay{
         if (whiteChecked) check += 1;
         if (blackChecked) check += 2;
         return check;
-    }
-
-    public boolean Castle(int startRank, int startFile, int endRank, int endFile){
-        
-
-        return false;
     }
 
 // public void printBoard(){

@@ -51,7 +51,7 @@ public class Chess {
 		if (parts.length == 3) special = parts[2];
 
 		// Trying to make the move
-		result.message = chessBoard.Move(startFile, startRank, endFile, endRank, special);
+		result.message = chessBoard.Move(startRank, startFile, endFile, endRank, special);
 
 		// Getting updated board
 		result.piecesOnBoard = chessBoard.getBoardAsList();
