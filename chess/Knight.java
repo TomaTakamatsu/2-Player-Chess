@@ -20,8 +20,4 @@ public class Knight extends Piece{
         return false;
     }
 
-    public String toString(){
-        if (player) return "wN ";
-        else return "bN ";
-    }
 }

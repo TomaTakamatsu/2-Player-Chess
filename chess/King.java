@@ -27,8 +27,4 @@ public class King extends Piece {
         return true;
     }
     
-    @Override
-    public String toString() {
-        return (player ? "w" : "b") + "K";
-    }
 }
