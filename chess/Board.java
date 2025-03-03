@@ -200,6 +200,7 @@ public class Board extends ReturnPlay{
         if(targetPiece == null || (!whiteTurn && targetPiece.player) || (whiteTurn && !targetPiece.player)){
             System.out.println("Move: " + startRank + " " + startFile + " " + endRank + " " + endFile);
             System.out.println("Correct player not making move s");
+            System.out.println(whiteTurn + " ");
             return ReturnPlay.Message.ILLEGAL_MOVE;
         }
 
@@ -274,8 +275,11 @@ public class Board extends ReturnPlay{
 
 
         // Switching turns
-        if (whiteTurn) whiteTurn = false;
-        else whiteTurn = true;
+        whiteTurn = !whiteTurn;
+
+
+        // Check for draw
+        if (special != null && special.equals("draw?")) return ReturnPlay.Message.DRAW;
 
         // Checking for checks
         int check = isKingInCheck();
@@ -283,12 +287,6 @@ public class Board extends ReturnPlay{
 
         // Check for checkmate
 
-        // Check for draw
-        if (special != null && special.equals("draw?")) return ReturnPlay.Message.DRAW;
-        
-        // Switch turns
-        if (whiteTurn) whiteTurn = false;
-        else whiteTurn = true;
 
         return null;
     }
