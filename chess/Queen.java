@@ -23,12 +23,15 @@ public class Queen extends Piece {
         int currentFile = file + fileStep;
     
         while (currentRank != targetRank || currentFile != targetFile) {
+            if (currentRank < 0 || currentRank >= 8 || currentFile < 0 || currentFile >= 8) {
+                return false; // Prevent out-of-bounds access
+            }
             if (board.board[currentRank][currentFile] != null) {
                 return false;
             }
             currentRank += rankStep;
             currentFile += fileStep;
-        }
+        }        
     
         // check if destination has same color piece
         Piece targetPiece = board.board[targetRank][targetFile];

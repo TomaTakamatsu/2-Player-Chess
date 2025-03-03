@@ -35,12 +35,63 @@ public abstract class Piece extends ReturnPiece{
         this.pieceRank = rank + 1;
     }
 
-    public boolean validMove(int targetRank, int targetFile, Board board){
-        if (targetRank == rank && targetFile == file) return false; // Checking if move changes nothing
-        if (targetRank > 7 || targetRank < 0 || targetFile > 7 || targetFile < 0) return false; // Checking if move is within the board
+    // public boolean validMove(int targetRank, int targetFile, Board board){
+    //     if (targetRank == rank && targetFile == file) return false; // Checking if move changes nothing
+    //     if (targetRank > 7 || targetRank < 0 || targetFile > 7 || targetFile < 0) return false; // Checking if move is within the board
 
-        // Checking if move will cause a check on their own king
+    //     // Checking if move will cause a check on their own king
 
+    //     // Making a copy of the piece
+    //     Piece copyPiece = null;
+    //     if (this instanceof Pawn) copyPiece = new Pawn(player, targetRank, targetFile);
+    //     else if (this instanceof Rook) copyPiece = new Rook(player, targetRank, targetFile);
+    //     else if (this instanceof Bishop) copyPiece = new Bishop(player, targetRank, targetFile);
+    //     else if (this instanceof Knight) copyPiece = new Knight(player, targetRank, targetFile);
+    //     else if (this instanceof King) copyPiece = new King(player, targetRank, targetFile);
+    //     else if (this instanceof Queen) copyPiece = new Queen(player, targetRank, targetFile);
+
+    //     // Making a copy of the board
+    //     Piece[][] copiedBoard = board.copyBoard(board.board);
+
+    //     // Move the piece on the copied board
+    //     copiedBoard[rank][file] = null;
+    //     copiedBoard[targetRank][targetFile] = copyPiece;
+
+    //     Board copiedBoardObj = new Board(copiedBoard);
+
+    //     int check = copiedBoardObj.isKingInCheck();
+    //     if (check == 3) return false;
+    //     else if (check == 2 && !player) return false;
+    //     else if (check == 1 && player) return false;
+
+    //     return true; // Move is valid
+    // }
+    public boolean validMove(int targetRank, int targetFile, Board board) {
+        String startSquare = intToFile.get(file).toString() + (rank + 1);
+        String endSquare = intToFile.get(targetFile).toString() + (targetRank + 1);
+        String pieceName = this.getClass().getSimpleName();
+    
+        // Print move being checked
+        System.out.print("🔍 Checking move: " + pieceName + " from " + startSquare + " to " + endSquare + " → ");
+    
+        if (targetRank == rank && targetFile == file) {
+            System.out.println("INVALID ❌");
+            return false; 
+        }
+        if (targetRank > 7 || targetRank < 0 || targetFile > 7 || targetFile < 0) {
+            System.out.println("INVALID ❌");
+            return false; 
+        }
+    
+        // Special case: Ensure KING cannot move to a square occupied by its own piece
+        if (this instanceof King) {
+            Piece targetPiece = board.board[targetRank][targetFile];
+            if (targetPiece != null && targetPiece.player == this.player) {
+                System.out.println("INVALID ❌"); // King cannot land on a same-color piece
+                return false;
+            }
+        }
+    
         // Making a copy of the piece
         Piece copyPiece = null;
         if (this instanceof Pawn) copyPiece = new Pawn(player, targetRank, targetFile);
@@ -49,26 +100,39 @@ public abstract class Piece extends ReturnPiece{
         else if (this instanceof Knight) copyPiece = new Knight(player, targetRank, targetFile);
         else if (this instanceof King) copyPiece = new King(player, targetRank, targetFile);
         else if (this instanceof Queen) copyPiece = new Queen(player, targetRank, targetFile);
-
+    
         // Making a copy of the board
         Piece[][] copiedBoard = board.copyBoard(board.board);
-
+    
         // Move the piece on the copied board
         copiedBoard[rank][file] = null;
         copiedBoard[targetRank][targetFile] = copyPiece;
-
+    
         Board copiedBoardObj = new Board(copiedBoard);
-
+    
         // Check if the player's own king is in check after the move
-        // if (copiedBoardObj.isKingInCheck(player)) {
-        //     return false;
-        // }
-        // Checking if king is in check
         int check = copiedBoardObj.isKingInCheck();
-        if (check == 3) return false;
-        else if (check == 2 && !player) return false;
-        else if (check == 1 && player) return false;
-
-        return true; // Move is valid
-    }
+        if (check == 3 || (check == 2 && !player) || (check == 1 && player)) {
+            System.out.println("INVALID ❌");
+            return false;
+        }
+    
+        // Special check for King moving into check
+        if (this instanceof King) {
+            for (int r = 0; r < 8; r++) {
+                for (int f = 0; f < 8; f++) {
+                    Piece attackingPiece = board.board[r][f];
+                    if (attackingPiece != null && attackingPiece.player != this.player) {
+                        if (attackingPiece.makeMove(targetRank, targetFile, board)) {
+                            System.out.println("INVALID ❌");
+                            return false;
+                        }
+                    }
+                }
+            }
+        }
+    
+        System.out.println("VALID ✅");
+        return true;
+    }    
 }
