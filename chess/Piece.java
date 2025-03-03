@@ -35,22 +35,22 @@ public abstract class Piece extends ReturnPiece{
         this.pieceRank = rank + 1;
     }
 
-    public boolean validMove(int targetRank, int targetFile, Board board) {
-        if (targetRank == rank && targetFile == file) {
-            return false; 
-        }
-        if (targetRank > 7 || targetRank < 0 || targetFile > 7 || targetFile < 0) {
-            return false; 
-        }
-    
-        // Special case: Ensure KING cannot move to a square occupied by its own piece
-        if (this instanceof King) {
+    public boolean validMove(int targetRank, int targetFile, Board board){
+        if (targetRank == rank && targetFile == file) return false; // Checking if move changes nothing
+        if (targetRank > 7 || targetRank < 0 || targetFile > 7 || targetFile < 0) return false; // Checking if move is within the board
+        if (board.board[targetRank][targetFile] instanceof King) return false; // If target is a king, return false
+        System.out.println("saw if it was king");
+
+         // Special case: Ensure KING cannot move to a square occupied by its own piece
+         if (this instanceof King) {
             Piece targetPiece = board.board[targetRank][targetFile];
             if (targetPiece != null && targetPiece.player == this.player) {
                 return false;
             }
         }
-    
+
+        // Checking if move will cause a check on their own king
+
         // Making a copy of the piece
         Piece copyPiece = null;
         if (this instanceof Pawn) copyPiece = new Pawn(player, targetRank, targetFile);

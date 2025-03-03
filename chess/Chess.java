@@ -46,12 +46,12 @@ public class Chess {
 		int endFile = ((int)parts[1].charAt(0)) - 97;
 		int endRank = parts[1].charAt(1) - '0' - 1;
 
-		// Checking for draw or pawn promotion piece request
+		// Checking for draw or pawn promotion piece request, special could be "draw?", "resign", "Q", etc.
 		String special = null;
 		if (parts.length == 3) special = parts[2];
 
 		// Trying to make the move
-		result.message = chessBoard.Move(startFile, startRank, endFile, endRank, special);
+		result.message = chessBoard.Move(startRank, startFile, endFile, endRank, special);
 
 		// Getting updated board
 		result.piecesOnBoard = chessBoard.getBoardAsList();
