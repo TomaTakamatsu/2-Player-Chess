@@ -41,6 +41,14 @@ public abstract class Piece extends ReturnPiece{
         if (board.board[targetRank][targetFile] instanceof King) return false; // If target is a king, return false
         System.out.println("saw if it was king");
 
+         // Special case: Ensure KING cannot move to a square occupied by its own piece
+         if (this instanceof King) {
+            Piece targetPiece = board.board[targetRank][targetFile];
+            if (targetPiece != null && targetPiece.player == this.player) {
+                return false;
+            }
+        }
+
         // Checking if move will cause a check on their own king
 
         // Making a copy of the piece
@@ -51,19 +59,36 @@ public abstract class Piece extends ReturnPiece{
         else if (this instanceof Knight) copyPiece = new Knight(player, targetRank, targetFile);
         else if (this instanceof King) copyPiece = new King(player, targetRank, targetFile);
         else if (this instanceof Queen) copyPiece = new Queen(player, targetRank, targetFile);
-
+    
         // Making a copy of the board
         Piece[][] copiedBoard = board.copyBoard(board.board);
+    
+        // Move the piece on the copied board
         copiedBoard[rank][file] = null;
         copiedBoard[targetRank][targetFile] = copyPiece;
+    
         Board copiedBoardObj = new Board(copiedBoard);
-
-        // Checking if king is in check
+    
+        // Check if the player's own king is in check after the move
         int check = copiedBoardObj.isKingInCheck();
-        if (check == 3) return false;
-        else if (check == 2 && !player) return false;
-        else if (check == 1 && player) return false;
-
-        return true; // Move is valid
-    }
+        if (check == 3 || (check == 2 && !player) || (check == 1 && player)) {
+            return false;
+        }
+    
+        // Special check for King moving into check
+        if (this instanceof King) {
+            for (int r = 0; r < 8; r++) {
+                for (int f = 0; f < 8; f++) {
+                    Piece attackingPiece = board.board[r][f];
+                    if (attackingPiece != null && attackingPiece.player != this.player) {
+                        if (attackingPiece.makeMove(targetRank, targetFile, board)) {
+                            return false;
+                        }
+                    }
+                }
+            }
+        }
+    
+        return true;
+    }    
 }

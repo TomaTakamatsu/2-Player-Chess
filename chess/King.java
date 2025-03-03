@@ -29,7 +29,6 @@ public class King extends Piece {
         
         return true;
     }
-
     public boolean Castle(int targetRank, int targetFile, Board board){
         // Checking to see if King is moving ranks
         if ((targetRank != 0 && player) && (targetRank != 7 && !player)){
@@ -94,4 +93,5 @@ public class King extends Piece {
         hasMoved = true;
         return true;
     }
+    
 }

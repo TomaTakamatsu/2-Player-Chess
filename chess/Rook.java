@@ -30,11 +30,14 @@ public class Rook extends Piece{
         // Checking if there are pieces between current and target
         int currentRank = rank + rankDirection;
         int currentFile = file + fileDirection;
-        while (currentRank != targetRank || currentFile != targetFile){
+        while (currentRank != targetRank || currentFile != targetFile) {
+            if (currentRank < 0 || currentRank >= 8 || currentFile < 0 || currentFile >= 8) {
+                return false; // Prevent out-of-bounds access
+            }
             if (board.board[currentRank][currentFile] != null) return false; // Piece is blocking, so move is invalid
             currentRank += rankDirection;
             currentFile += fileDirection;
-        }
+        }        
 
         // Checking if target is the same colored piece
         Piece target = board.board[targetRank][targetFile];
